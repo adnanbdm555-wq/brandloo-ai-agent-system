@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NAV } from "@/lib/nav";
@@ -11,10 +12,8 @@ export function Sidebar() {
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-ink-border bg-ink lg:flex">
       <div className="flex items-center gap-2.5 px-6 py-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber text-sm font-semibold text-ink">
-          A
-        </div>
-        <span className="font-display text-lg text-canvas">AdPulse AI</span>
+        <Image src="/brandloop-icon.png" alt="" width={32} height={32} className="h-8 w-8" />
+        <span className="font-display text-lg text-canvas">Brandloop</span>
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">

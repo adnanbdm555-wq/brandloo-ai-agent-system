@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Menu, X, LogOut, ChevronDown, ShieldCheck } from "lucide-react";
@@ -109,7 +110,10 @@ export function TopBar({
           />
           <div className="absolute inset-y-0 left-0 flex w-72 flex-col bg-ink">
             <div className="flex items-center justify-between px-5 py-5">
-              <span className="font-display text-lg text-canvas">AdPulse AI</span>
+              <div className="flex items-center gap-2.5">
+                <Image src="/brandloop-icon.png" alt="" width={28} height={28} className="h-7 w-7" />
+                <span className="font-display text-lg text-canvas">Brandloop</span>
+              </div>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="rounded-md p-1.5 text-canvas/70 hover:bg-canvas/10"

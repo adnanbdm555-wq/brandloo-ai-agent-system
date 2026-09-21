@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function AuthLayout({
   children,
 }: {
@@ -7,10 +9,8 @@ export default function AuthLayout({
     <div className="flex min-h-screen">
       <div className="hidden w-[42%] flex-col justify-between bg-ink px-14 py-12 text-canvas lg:flex">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber text-sm font-semibold text-ink">
-            A
-          </div>
-          <span className="font-display text-lg">AdPulse AI</span>
+          <Image src="/brandloop-icon.png" alt="" width={32} height={32} className="h-8 w-8" />
+          <span className="font-display text-lg">Brandloop</span>
         </div>
 
         <div className="max-w-sm">
@@ -24,7 +24,7 @@ export default function AuthLayout({
         </div>
 
         <p className="text-xs text-canvas/40">
-          AdPulse IMC (Pvt.) Ltd. — Social Media Operations
+          Brandloop by Softnexa — Social Media Operations
         </p>
       </div>
 

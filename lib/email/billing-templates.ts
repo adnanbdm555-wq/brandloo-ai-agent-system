@@ -1,10 +1,10 @@
 function wrapper(bodyHtml: string): string {
   return `
   <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
-    <p style="font-size: 13px; color: #8A8778; letter-spacing: 0.02em; text-transform: uppercase; margin: 0 0 16px;">AdPulse AI</p>
+    <p style="font-size: 13px; color: #8A8778; letter-spacing: 0.02em; text-transform: uppercase; margin: 0 0 16px;">Brandloop</p>
     ${bodyHtml}
     <p style="font-size: 12px; color: #8A8778; margin-top: 32px;">
-      This is an automated billing notice from your AdPulse AI workspace.
+      This is an automated billing notice from your Brandloop workspace.
     </p>
   </div>`;
 }

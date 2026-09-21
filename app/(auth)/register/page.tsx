@@ -108,7 +108,7 @@ function RegisterForm() {
               value={agencyName}
               onChange={(e) => setAgencyName(e.target.value)}
               className={inputClass}
-              placeholder="AdPulse IMC"
+              placeholder="Your Agency Name"
             />
           </div>
         ) : (

@@ -361,7 +361,7 @@ export function BrandForm({ brand }: { brand?: Brand }) {
             value={form.requiredHashtags}
             onChange={(e) => set("requiredHashtags", e.target.value)}
             className={inputClass}
-            placeholder="#AdPulseIMC"
+            placeholder="#YourBrand"
           />
         </Field>
         <div className="sm:col-span-2">

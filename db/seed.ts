@@ -13,7 +13,7 @@ import { createInviteCode } from "./id";
 import { TRIAL_DAYS, STANDARD_PLAN_PRICE_PKR, BILLING_PERIOD_DAYS } from "../lib/billing/config";
 
 async function main() {
-  const email = "demo@adpulse.test";
+  const email = "demo@brandloop.test";
 
   const [existing] = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (existing) {

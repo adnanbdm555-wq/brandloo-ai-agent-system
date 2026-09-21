@@ -1,4 +1,4 @@
-# AdPulse AI — Social Media Operations Platform
+# Brandloop — Social Media Operations Platform
 
 **All 6 phases complete, plus a full commercial billing system and a
 chained agent Pipeline on top.** Authentication, multi-tenant Agencies,
@@ -249,7 +249,7 @@ from your Safepay merchant dashboard — read the Billing note under
 `production`.
 
 Optional: `npm run db:seed` creates a demo agency + Super Admin account
-(`demo@adpulse.test` / `demo12345`, also set as Platform Admin) —
+(`demo@brandloop.test` / `demo12345`, also set as Platform Admin) —
 dev/testing only, don't run this against a production database.
 
 `npm run db:studio` opens Drizzle Studio to browse data directly.
