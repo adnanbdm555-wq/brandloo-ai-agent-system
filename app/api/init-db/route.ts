@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { Pool } from "pg";
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
 
 const SQL_STATEMENTS = [
   // Enums
@@ -314,20 +315,16 @@ export async function GET() {
     );
   }
 
-  const pool = new Pool({ connectionString: databaseUrl });
-
   try {
-    for (const sql of SQL_STATEMENTS) {
-      await pool.query(sql);
+    for (const statement of SQL_STATEMENTS) {
+      await db.execute(sql.raw(statement));
     }
-    await pool.end();
 
     return NextResponse.json({
       success: true,
       message: "Database tables and enums initialized successfully! You can now register and sign in."
     });
   } catch (error: any) {
-    await pool.end().catch(() => {});
     return NextResponse.json(
       {
         error: "Failed to initialize database",
