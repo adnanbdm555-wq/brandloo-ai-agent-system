@@ -1,4 +1,4 @@
-import { getAnthropicClient, AGENT_MODEL } from "./client";
+import { callAI } from "./client";
 import { buildBrandContext } from "./brand-context";
 
 export type VideoScene = {
@@ -32,26 +32,13 @@ export async function runVideoAgent(params: {
     throw new Error("Brand not found");
   }
 
-  const client = getAnthropicClient();
-
-  const message = await client.messages.create({
-    model: AGENT_MODEL,
-    max_tokens: 1400,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Brand context:\n${context.contextText}\n\nPlatform: ${params.platform}\nBrief: ${params.brief}`,
-      },
-    ],
+  const rawText = await callAI({
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: `Brand context:\n${context.contextText}\n\nPlatform: ${params.platform}\nBrief: ${params.brief}`,
+    maxTokens: 1400,
   });
 
-  const textBlock = message.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("Video Agent returned no text");
-  }
-
-  const cleaned = textBlock.text.trim().replace(/^```json\s*|\s*```$/g, "");
+  const cleaned = rawText.trim().replace(/^```json\s*|\s*```$/g, "");
   const parsed = JSON.parse(cleaned) as VideoOutput;
 
   return {

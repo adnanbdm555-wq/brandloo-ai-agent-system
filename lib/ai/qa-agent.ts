@@ -1,4 +1,4 @@
-import { getAnthropicClient, AGENT_MODEL } from "./client";
+import { callAI } from "./client";
 import { buildBrandContext } from "./brand-context";
 
 export type QAOutput = {
@@ -33,26 +33,13 @@ export async function runQAAgent(params: {
     throw new Error("Brand not found");
   }
 
-  const client = getAnthropicClient();
-
-  const message = await client.messages.create({
-    model: AGENT_MODEL,
-    max_tokens: 800,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Brand context:\n${context.contextText}\n\nPlatform: ${params.platform}\nDraft post:\n${params.body}\n\nHashtags used: ${params.hashtags.join(", ") || "none"}`,
-      },
-    ],
+  const rawText = await callAI({
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: `Brand context:\n${context.contextText}\n\nPlatform: ${params.platform}\nDraft post:\n${params.body}\n\nHashtags used: ${params.hashtags.join(", ") || "none"}`,
+    maxTokens: 800,
   });
 
-  const textBlock = message.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("QA Agent returned no text");
-  }
-
-  const cleaned = textBlock.text.trim().replace(/^```json\s*|\s*```$/g, "");
+  const cleaned = rawText.trim().replace(/^```json\s*|\s*```$/g, "");
   const parsed = JSON.parse(cleaned) as QAOutput;
 
   return {

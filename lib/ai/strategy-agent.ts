@@ -1,4 +1,4 @@
-import { getAnthropicClient, AGENT_MODEL } from "./client";
+import { callAI } from "./client";
 import { buildBrandContext } from "./brand-context";
 
 export type StrategyOutput = {
@@ -24,26 +24,13 @@ export async function runStrategyAgent(params: {
     throw new Error("Brand not found");
   }
 
-  const client = getAnthropicClient();
-
-  const message = await client.messages.create({
-    model: AGENT_MODEL,
-    max_tokens: 1200,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Brand context:\n${context.contextText}\n\nCampaign: ${params.campaignName}\nObjective: ${params.objective || "Not specified — infer a sensible objective from the brand context."}`,
-      },
-    ],
+  const rawText = await callAI({
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: `Brand context:\n${context.contextText}\n\nCampaign: ${params.campaignName}\nObjective: ${params.objective || "Not specified — infer a sensible objective from the brand context."}`,
+    maxTokens: 1200,
   });
 
-  const textBlock = message.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("Strategy Agent returned no text");
-  }
-
-  const cleaned = textBlock.text.trim().replace(/^```json\s*|\s*```$/g, "");
+  const cleaned = rawText.trim().replace(/^```json\s*|\s*```$/g, "");
   const parsed = JSON.parse(cleaned) as StrategyOutput;
 
   return {

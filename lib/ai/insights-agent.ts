@@ -1,4 +1,4 @@
-import { getAnthropicClient, AGENT_MODEL } from "./client";
+import { callAI } from "./client";
 import { buildBrandContext } from "./brand-context";
 import { db } from "@/db";
 import { contentItems, campaigns } from "@/db/schema";
@@ -76,26 +76,13 @@ export async function runInsightsAgent(brandId: string): Promise<InsightsOutput 
     return `- "${item.title}" (${item.platform}, ${item.contentType}${campaign ? `, campaign: ${campaign.name}` : ""}): ${metrics}`;
   });
 
-  const client = getAnthropicClient();
-
-  const message = await client.messages.create({
-    model: AGENT_MODEL,
-    max_tokens: 1200,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `Brand context:\n${context.contextText}\n\nPublished posts with performance data:\n${dataLines.join("\n")}`,
-      },
-    ],
+  const rawText = await callAI({
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: `Brand context:\n${context.contextText}\n\nPublished posts with performance data:\n${dataLines.join("\n")}`,
+    maxTokens: 1200,
   });
 
-  const textBlock = message.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("Insights Agent returned no text");
-  }
-
-  const cleaned = textBlock.text.trim().replace(/^```json\s*|\s*```$/g, "");
+  const cleaned = rawText.trim().replace(/^```json\s*|\s*```$/g, "");
   const parsed = JSON.parse(cleaned) as InsightsOutput;
 
   return {
