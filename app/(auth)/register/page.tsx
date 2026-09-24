@@ -28,40 +28,50 @@ function RegisterForm() {
     setError(null);
     setLoading(true);
 
-    const payload =
-      mode === "create"
-        ? { mode, name, email, password, agencyName }
-        : { mode, name, email, password, inviteCode };
+    try {
+      const payload =
+        mode === "create"
+          ? { mode, name, email, password, agencyName }
+          : { mode, name, email, password, inviteCode };
 
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}): Please check database connection.` };
+      }
 
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong.");
+      if (!res.ok) {
+        setError(data.error ?? "Registration failed. Please check your database connection.");
+        setLoading(false);
+        return;
+      }
+
+      const signInRes = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInRes?.error) {
+        setError("Account created — please sign in from the login page.");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message ?? "An unexpected error occurred. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const signInRes = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (signInRes?.error) {
-      setError("Account created — sign in from the login page.");
-      return;
-    }
-
-    router.push("/dashboard");
-    router.refresh();
   }
 
   return (
