@@ -17,18 +17,37 @@ function parseRecommendations(value: string): string[] {
 
 export default async function DashboardPage() {
   const session = await auth();
-  const agencyId = session!.user.agencyId;
-  const [allBrands, allCampaigns, allContent, recentInsights] = await Promise.all([
-    db.select().from(brands).where(eq(brands.agencyId, agencyId)),
-    db.select().from(campaigns).where(eq(campaigns.agencyId, agencyId)),
-    db.select().from(contentItems).where(eq(contentItems.agencyId, agencyId)),
-    db
-      .select()
-      .from(aiInsights)
-      .where(eq(aiInsights.agencyId, agencyId))
-      .orderBy(desc(aiInsights.createdAt))
-      .limit(1),
-  ]);
+  const agencyId = session?.user?.agencyId;
+
+  if (!agencyId) {
+    redirect("/login");
+  }
+
+  let allBrands: any[] = [];
+  let allCampaigns: any[] = [];
+  let allContent: any[] = [];
+  let recentInsights: any[] = [];
+
+  try {
+    const results = await Promise.all([
+      db.select().from(brands).where(eq(brands.agencyId, agencyId)),
+      db.select().from(campaigns).where(eq(campaigns.agencyId, agencyId)),
+      db.select().from(contentItems).where(eq(contentItems.agencyId, agencyId)),
+      db
+        .select()
+        .from(aiInsights)
+        .where(eq(aiInsights.agencyId, agencyId))
+        .orderBy(desc(aiInsights.createdAt))
+        .limit(1),
+    ]);
+    allBrands = results[0] ?? [];
+    allCampaigns = results[1] ?? [];
+    allContent = results[2] ?? [];
+    recentInsights = results[3] ?? [];
+  } catch (err) {
+    console.error("Error loading dashboard data:", err);
+  }
+
   const latestInsight = recentInsights[0] ?? null;
   const insightBrandName = latestInsight
     ? allBrands.find((b) => b.id === latestInsight.brandId)?.name

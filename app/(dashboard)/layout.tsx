@@ -16,16 +16,22 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Checked fresh on every request (not cached in the session/JWT) so a
-  // suspension — whether automatic from the billing cron or a manual
-  // platform-admin action — takes effect immediately, not just at next
-  // login. /billing itself lives outside this layout specifically so a
-  // suspended agency can still reach it to pay.
-  const [subscription] = await db
-    .select()
-    .from(subscriptions)
-    .where(eq(subscriptions.agencyId, session.user.agencyId))
-    .limit(1);
+  const agencyId = session.user.agencyId;
+  if (!agencyId) {
+    redirect("/login");
+  }
+
+  let subscription = null;
+  try {
+    const [sub] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.agencyId, agencyId))
+      .limit(1);
+    subscription = sub ?? null;
+  } catch (err) {
+    console.error("Failed to fetch subscription status:", err);
+  }
 
   if (subscription?.status === "SUSPENDED") {
     redirect("/billing");
